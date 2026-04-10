@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 // Encrypts input plaintext using XSalsa20-Poly1305.
 std::vector<unsigned char> encrypt(

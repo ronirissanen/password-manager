@@ -3,7 +3,6 @@
 #include <map>
 #include <vector>
 #include <iostream>
-
 using std::string;
 using std::vector;
 
@@ -37,9 +36,9 @@ vector<unsigned char> encrypt(
     const vector<unsigned char> &plaintext,
     const string &password)
 {
-    auto salt = generateSalt();
     // human memorable passwords are too weak to be keys
-    // derive a real key from the password instead
+    // derive a real key from the password and a salt instead
+    auto salt = generateSalt();
     auto key = deriveKey(password, salt);
 
     // generate a nonce (random number) for each encryption
