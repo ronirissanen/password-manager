@@ -1,40 +1,77 @@
-#include "cli.h"
+#include <cli.h>
+#include <vault.h>
+#include <sodium.h>
 #include <iostream>
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
 
-void CLI::handleAdd(const std::string& name)
+void CLI::handleAdd(const string &name)
 {
-    std::cout << "add: " << name << std::endl;
+    string username, password;
+    cout << "Username: ";
+    cin >> username;
+    cout << "Password: ";
+    cin >> password;
+
+    vault.unlock();
+    vault.addEntry({name, username, password});
+    vault.save();
 }
 
-void CLI::handleGet(const std::string& name)
+void CLI::handleGet(const string &name)
 {
-    std::cout << "get: " << name << std::endl;
+    vault.unlock();
+    Entry entry = vault.getEntry(name);
+    cout << "Name: " + entry.name + " Username: " + entry.username + " Password: " + entry.password << endl;
+    vault.lock();
 }
 
 void CLI::handleList()
 {
-    std::cout << "list" << std::endl;
+    vault.unlock();
+    vector<string> entries = vault.listEntries();
+    for (const string &s : entries)
+    {
+        cout << s << endl;
+    }
+    vault.lock();
 }
 
-void CLI::handleDelete(const std::string& name)
+void CLI::handleDelete(const string &name)
 {
-    std::cout << "delete: " << name << std::endl;
+    vault.unlock();
+    vault.deleteEntry(name);
+    vault.lock();
 }
 
 void CLI::handleGenerate()
 {
-    std::cout << "generate" << std::endl;
+    const string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    const int length = 20;
+    string password;
+
+    for (int i = 0; i < length; i++)
+    {
+        unsigned char random;
+        randombytes_buf(&random, 1);
+        // avoid modulo bias with randombytes_uniform from sodium
+        password += charset[randombytes_uniform(charset.size())];
+    }
+
+    cout << password << endl;
 }
 
-void CLI::run(int argc, char* argv[])
+void CLI::run(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        printUsage();
+        printCommands();
         return;
     }
 
-    std::string command = argv[1];
+    string command = argv[1];
 
     if (command == "add")
     {
@@ -64,16 +101,16 @@ void CLI::run(int argc, char* argv[])
     }
     else
     {
-        printUsage();
+        printCommands();
     }
 }
 
-void CLI::printUsage()
+void CLI::printCommands()
 {
-    std::cout << "Usage:" << std::endl;
-    std::cout << "  pmgr add <name>" << std::endl;
-    std::cout << "  pmgr get <name>" << std::endl;
-    std::cout << "  pmgr list" << std::endl;
-    std::cout << "  pmgr delete <name>" << std::endl;
-    std::cout << "  pmgr generate" << std::endl;
+    cout << "Commands:" << endl;
+    cout << "  pmgr add <name>" << endl;
+    cout << "  pmgr get <name>" << endl;
+    cout << "  pmgr list" << endl;
+    cout << "  pmgr delete <name>" << endl;
+    cout << "  pmgr generate" << endl;
 }

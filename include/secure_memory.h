@@ -9,5 +9,6 @@ void setCoreDumpLimits();
 void lockMemoryPages();
 
 // Securely zeroes a memory region before freeing to prevent secrets
-// from lingering in freed memory. -- to be implemented
-void secureZero();
+// from lingering in freed memory.
+// to be implemented
+void secureZero(const unsigned char a, unsigned char b);

@@ -7,7 +7,7 @@ using std::vector;
 
 struct Entry
 {
-    string name;        // may be redundant with the map key
+    string name; // may be redundant with the map key
     string username;
     string password;
 };
@@ -15,8 +15,9 @@ struct Entry
 class Vault
 {
 public:
-    void load();
+    void unlock();
     void save();
+    void lock();
 
     void addEntry(const Entry &entry);
     Entry getEntry(const string &name);
@@ -25,7 +26,7 @@ public:
 
 private:
     string path;
-    vector<unsigned char> key;
+    string password;
     std::map<string, Entry> entries;
 
     string serialize();
