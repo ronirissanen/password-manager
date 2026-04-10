@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vault.h>
 
 class CLI
 {
@@ -8,6 +9,7 @@ public:
 
 private:
     Vault vault;
+    void init();
     void handleAdd(const std::string &name);
     void handleGet(const std::string &name);
     void handleList();

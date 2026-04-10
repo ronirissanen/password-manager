@@ -18,7 +18,6 @@ void setCoreDumpLimits()
     {
         throw std::runtime_error("Failed to disable core dumps.");
     }
-    cout << "Core dumps disabled." << endl;
 }
 
 void lockMemoryPages()

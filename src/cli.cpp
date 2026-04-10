@@ -7,6 +7,16 @@ using std::cout;
 using std::endl;
 using std::string;
 
+void CLI::init()
+{
+    string password;
+    cout << "Master password: ";
+    cin >> password;
+    vault = Vault("pmgr.vault", password);
+    vault.unlock();
+    vault.save(); // save to make sure a file exists.
+}
+
 void CLI::handleAdd(const string &name)
 {
     string username, password;
@@ -24,7 +34,9 @@ void CLI::handleGet(const string &name)
 {
     vault.unlock();
     Entry entry = vault.getEntry(name);
-    cout << "Name: " + entry.name + " Username: " + entry.username + " Password: " + entry.password << endl;
+    cout << "Name: " + entry.name << endl;
+    cout << "Username: " + entry.username << endl;
+    cout << "Password: " + entry.password << endl;
     vault.lock();
 }
 
@@ -70,6 +82,8 @@ void CLI::run(int argc, char *argv[])
         printCommands();
         return;
     }
+
+    init();
 
     string command = argv[1];
 

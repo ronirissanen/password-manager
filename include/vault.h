@@ -24,6 +24,9 @@ public:
     void deleteEntry(const string &name);
     vector<string> listEntries();
 
+    Vault(const string &path, const string &password);
+    Vault() = default;
+
 private:
     string path;
     string password;

@@ -1,12 +1,14 @@
 #include <vault.h>
 #include <crypto.h>
-#include <sodium.h>
 #include <secure_memory.h>
 #include <fstream>
 #include <sstream>
 #include <vector>
 using std::string;
 using std::vector;
+
+Vault::Vault(const string &path, const string &password)
+    : path(path), password(password) {}
 
 void Vault::lock()
 {
@@ -16,6 +18,9 @@ void Vault::lock()
         secureZero(pair.second.password.data(), pair.second.password.size());
     }
     entries.clear();
+
+    // There are arguments to also zero the password after very operation.
+    // I chose not to for usability.
     secureZero(password.data(), password.size());
     password.clear();
 }
@@ -24,7 +29,7 @@ void Vault::unlock()
 {
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open())
-        throw std::runtime_error("Cannot open vault file for reading.");
+        return;
 
     vector<unsigned char> ciphertext(
         (std::istreambuf_iterator<char>(file)),
