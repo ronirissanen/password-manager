@@ -5,11 +5,12 @@
 class CLI
 {
 public:
-    void run(int argc, char *argv[]);
+    void run();
 
 private:
     Vault vault;
     void init();
+    std::string promptPassword(const std::string &prompt);
     void handleAdd(const std::string &name);
     void handleGet(const std::string &name);
     void handleList();

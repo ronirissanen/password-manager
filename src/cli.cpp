@@ -2,16 +2,50 @@
 #include <vault.h>
 #include <sodium.h>
 #include <iostream>
+#include <sstream>
+#include <limits>
+#include <termios.h>
+#include <unistd.h>
+
 using std::cin;
 using std::cout;
-using std::endl;
 using std::string;
+using std::vector;
+
+constexpr char nl = '\n';
+
+string CLI::promptPassword(const string &prompt)
+{
+    cout << prompt << std::flush;
+
+    termios oldt, newt;
+    tcgetattr(STDIN_FILENO, &oldt); // save current settings
+    newt = oldt;
+    newt.c_lflag &= ~ECHO; // disable echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+    string password;
+    std::getline(cin, password); // read full line
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // restore
+    cout << '\n';
+
+    return password;
+}
 
 void CLI::init()
 {
+    // Get master password from user input
     string password;
-    cout << "Master password: ";
-    cin >> password;
+    cin.clear();
+    while (true)
+    {
+        password = promptPassword("Master password: ");
+        if (password.length() >= 12)
+            break;
+
+        cout << "Password too short." << nl;
+    }
     vault = Vault("pmgr.vault", password);
     vault.unlock();
     vault.save(); // save to make sure a file exists.
@@ -21,41 +55,34 @@ void CLI::handleAdd(const string &name)
 {
     string username, password;
     cout << "Username: ";
-    cin >> username;
+    std::getline(cin, username);
     cout << "Password: ";
-    cin >> password;
+    std::getline(cin, password);
 
-    vault.unlock();
     vault.addEntry({name, username, password});
     vault.save();
 }
 
 void CLI::handleGet(const string &name)
 {
-    vault.unlock();
     Entry entry = vault.getEntry(name);
-    cout << "Name: " + entry.name << endl;
-    cout << "Username: " + entry.username << endl;
-    cout << "Password: " + entry.password << endl;
-    vault.lock();
+    cout << "Name: " + entry.name << nl;
+    cout << "Username: " + entry.username << nl;
+    cout << "Password: " + entry.password << nl;
 }
 
 void CLI::handleList()
 {
-    vault.unlock();
     vector<string> entries = vault.listEntries();
     for (const string &s : entries)
     {
-        cout << s << endl;
+        cout << s << nl;
     }
-    vault.lock();
 }
 
 void CLI::handleDelete(const string &name)
 {
-    vault.unlock();
     vault.deleteEntry(name);
-    vault.lock();
 }
 
 void CLI::handleGenerate()
@@ -72,59 +99,80 @@ void CLI::handleGenerate()
         password += charset[randombytes_uniform(charset.size())];
     }
 
-    cout << password << endl;
+    cout << password << nl;
 }
 
-void CLI::run(int argc, char *argv[])
+void CLI::run()
 {
-    if (argc < 2)
-    {
-        printCommands();
-        return;
-    }
-
     init();
+    string command = "";
+    string value = "";
+    string overflow = "";
+    while (true)
+    {
+        cout << "pmgr> ";
 
-    string command = argv[1];
+        // get and parse input line
+        string line;
+        getline(cin, line);
+        std::istringstream stream(line);
+        stream >> command >> value >> overflow;
 
-    if (command == "add")
-    {
-        if (argc < 3)
-            throw std::runtime_error("add requires an entry name.");
-        handleAdd(argv[2]);
+        if (command == "exit" || command == "quit")
+        {
+            break;
+        }
+        else if (overflow.length() > 0)
+        {
+            printCommands();
+            continue;
+        }
+        else if (command == "help")
+        {
+            printCommands();
+        }
+        else if (command == "generate" && value.length() == 0 && overflow.length() == 0)
+        {
+            handleGenerate();
+        }
+        else if (command == "list" && value.length() == 0 && overflow.length() == 0)
+        {
+            handleList();
+        }
+        else if (value.length() == 0)
+        {
+            continue;
+        }
+        else if (command == "add")
+        {
+            handleAdd(value);
+        }
+        else if (command == "get")
+        {
+            handleGet(value);
+        }
+        else if (command == "delete")
+        {
+            handleDelete(value);
+        }
+        else
+        {
+            cout << "Invalid command. Use help to list valid commands.";
+        }
+
+        command = "";
+        value = "";
+        overflow = "";
     }
-    else if (command == "get")
-    {
-        if (argc < 3)
-            throw std::runtime_error("get requires an entry name.");
-        handleGet(argv[2]);
-    }
-    else if (command == "list")
-    {
-        handleList();
-    }
-    else if (command == "delete")
-    {
-        if (argc < 3)
-            throw std::runtime_error("delete requires an entry name.");
-        handleDelete(argv[2]);
-    }
-    else if (command == "generate")
-    {
-        handleGenerate();
-    }
-    else
-    {
-        printCommands();
-    }
+    vault.lock();
 }
 
 void CLI::printCommands()
 {
-    cout << "Commands:" << endl;
-    cout << "  pmgr add <name>" << endl;
-    cout << "  pmgr get <name>" << endl;
-    cout << "  pmgr list" << endl;
-    cout << "  pmgr delete <name>" << endl;
-    cout << "  pmgr generate" << endl;
+    cout << "Commands:" << nl;
+    cout << "  pmgr add <name>" << nl;
+    cout << "  pmgr get <name>" << nl;
+    cout << "  pmgr list" << nl;
+    cout << "  pmgr delete <name>" << nl;
+    cout << "  pmgr generate" << nl;
 }

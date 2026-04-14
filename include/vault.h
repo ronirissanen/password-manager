@@ -2,14 +2,13 @@
 #include <string>
 #include <map>
 #include <vector>
-using std::string;
-using std::vector;
+
 
 struct Entry
 {
-    string name; // may be redundant with the map key
-    string username;
-    string password;
+    std::string name; // may be redundant with the map key
+    std::string username;
+    std::string password;
 };
 
 class Vault
@@ -20,18 +19,18 @@ public:
     void lock();
 
     void addEntry(const Entry &entry);
-    Entry getEntry(const string &name);
-    void deleteEntry(const string &name);
-    vector<string> listEntries();
+    Entry getEntry(const std::string &name);
+    void deleteEntry(const std::string &name);
+    std::vector<std::string> listEntries();
 
-    Vault(const string &path, const string &password);
+    Vault(const std::string &path, const std::string &password);
     Vault() = default;
 
 private:
-    string path;
-    string password;
-    std::map<string, Entry> entries;
+    std::string path;
+    std::string password;
+    std::map<std::string, Entry> entries;
 
-    string serialize();
-    void deserialize(const string &data);
+    std::string serialize();
+    void deserialize(const std::string &data);
 };

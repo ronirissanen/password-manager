@@ -3,6 +3,8 @@
 #include "vault.h"
 #include "secure_memory.h"
 
+constexpr char nl = '\n';
+
 int main(int argc, char *argv[])
 {
     setCoreDumpLimits();
@@ -11,16 +13,16 @@ int main(int argc, char *argv[])
     try
     {
         CLI cli;
-        cli.run(argc, argv);
+        cli.run();
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Fatal error: " << e.what() << std::endl;
+        std::cerr << "Fatal error: " << e.what() + '\n';
         return 1;
     }
     catch (...)
     {
-        std::cerr << "Unknown error." << std::endl;
+        std::cerr << "Unknown error." + '\n';
         return 1;
     }
 
