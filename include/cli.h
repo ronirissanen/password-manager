@@ -15,6 +15,6 @@ private:
     void handleGet(const std::string &name);
     void handleList();
     void handleDelete(const std::string &name);
-    void handleGenerate();
+    std::string generatePassword();
     void printCommands();
 };

@@ -41,7 +41,7 @@ void CLI::init()
     while (true)
     {
         password = promptPassword("Master password: ");
-        if (password.length() >= 12)
+        if (password.length() >= 16)
             break;
 
         cout << "Password too short." << nl;
@@ -58,6 +58,9 @@ void CLI::handleAdd(const string &name)
     std::getline(cin, username);
     cout << "Password: ";
     std::getline(cin, password);
+
+    if (password == "generate")
+        password = generatePassword();
 
     vault.addEntry({name, username, password});
     vault.save();
@@ -83,9 +86,10 @@ void CLI::handleList()
 void CLI::handleDelete(const string &name)
 {
     vault.deleteEntry(name);
+    vault.save();
 }
 
-void CLI::handleGenerate()
+string CLI::generatePassword()
 {
     const string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
     const int length = 20;
@@ -99,7 +103,7 @@ void CLI::handleGenerate()
         password += charset[randombytes_uniform(charset.size())];
     }
 
-    cout << password << nl;
+    return password;
 }
 
 void CLI::run()
@@ -133,7 +137,7 @@ void CLI::run()
         }
         else if (command == "generate" && value.length() == 0 && overflow.length() == 0)
         {
-            handleGenerate();
+            cout << generatePassword() << nl;
         }
         else if (command == "list" && value.length() == 0 && overflow.length() == 0)
         {
@@ -141,6 +145,7 @@ void CLI::run()
         }
         else if (value.length() == 0)
         {
+            cout << "Command requires an argument." << nl;
             continue;
         }
         else if (command == "add")
