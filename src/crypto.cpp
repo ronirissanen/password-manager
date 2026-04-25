@@ -1,21 +1,25 @@
 #include <sodium.h>
+#include <crypto.h>
+#include <secret.h>
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
+#include <cstdint>
+#include <cstring>
 using std::string;
 using std::vector;
 
-vector<unsigned char> deriveKey(
-    const string &password, const vector<unsigned char> &salt)
+Secret deriveKey(
+    const Secret &password, const vector<unsigned char> &salt)
 {
-    vector<unsigned char> key(crypto_secretbox_KEYBYTES);
+    Secret key(crypto_secretbox_KEYBYTES);
 
     if (crypto_pwhash(
-            key.data(),
-            key.size(),
-            password.c_str(),
-            password.size(),
+            key.data,
+            key.capacity,
+            reinterpret_cast<const char *>(password.data),
+            password.length(),
             salt.data(),
             crypto_pwhash_OPSLIMIT_INTERACTIVE,
             crypto_pwhash_MEMLIMIT_INTERACTIVE,
@@ -32,42 +36,31 @@ vector<unsigned char> generateSalt()
     return salt;
 }
 
-vector<unsigned char> encrypt(
-    const vector<unsigned char> &plaintext,
-    const string &password)
+vector<unsigned char> encrypt(const Secret &plaintext, const Secret &key)
 {
-    // human memorable passwords are too weak to be keys
-    // derive a real key from the password and a salt instead
-    auto salt = generateSalt();
-    auto key = deriveKey(password, salt);
-
     // generate a nonce (random number) for each encryption
     vector<unsigned char> nonce(crypto_secretbox_NONCEBYTES);
     randombytes_buf(nonce.data(), nonce.size());
 
     // initialize cipher text with extra MAC bytes to detect tampering later
     vector<unsigned char> ciphertext(
-        plaintext.size() + crypto_secretbox_MACBYTES);
+        plaintext.length() + crypto_secretbox_MACBYTES);
 
-    // libsodium function for encryption
-    // generates ciphertext from plaintext using XSalsa20 stream cipher
+    // crypto_secretbox_easy -- libsodium function for encryption
+    // Generates ciphertext from plaintext using XSalsa20 stream cipher
     // Computes Poly1305 MAC over the ciphertext
     // Prepends the MAC to the ciphertext output
     crypto_secretbox_easy(
         ciphertext.data(),
-        plaintext.data(),
-        plaintext.size(),
+        plaintext.data,
+        plaintext.length(),
         nonce.data(),
-        key.data());
+        key.data);
 
     // prepend nonce to ciphertext for storage
     // before: [MAC 16 bytes][ciphertext]
     // after:  [nonce 24 bytes][MAC 16 bytes][ciphertext]
     ciphertext.insert(ciphertext.begin(), nonce.begin(), nonce.end());
-
-    // prepend salt too
-    // final layout: [salt][nonce][MAC][cipher]
-    ciphertext.insert(ciphertext.begin(), salt.begin(), salt.end());
 
     return ciphertext;
 }

@@ -7,22 +7,12 @@
 using std::string;
 using std::vector;
 
-Vault::Vault(const string &path, const string &password)
-    : path(path), password(password) {}
+Vault::Vault(const std::string &path, Secret password)
+    : path(path), key(std::move(password)) {}
 
 void Vault::lock()
 {
-    for (auto &pair : entries)
-    {
-        secureZero(pair.second.username.data(), pair.second.username.size());
-        secureZero(pair.second.password.data(), pair.second.password.size());
-    }
     entries.clear();
-
-    // There are arguments to also zero the password after very operation.
-    // I chose not to for usability.
-    secureZero(password.data(), password.size());
-    password.clear();
 }
 
 void Vault::unlock()
@@ -35,7 +25,7 @@ void Vault::unlock()
         (std::istreambuf_iterator<char>(file)),
         std::istreambuf_iterator<char>());
 
-    vector<unsigned char> plaintext = decrypt(ciphertext, password);
+    vector<unsigned char> plaintext = decrypt(ciphertext, key);
     string data(plaintext.begin(), plaintext.end());
     deserialize(data);
 }
@@ -44,7 +34,7 @@ void Vault::save()
 {
     string data = serialize();
     vector<unsigned char> plaintext(data.begin(), data.end());
-    vector<unsigned char> ciphertext = encrypt(plaintext, password);
+    vector<unsigned char> ciphertext = encrypt(plaintext, key);
 
     std::ofstream file(path, std::ios::binary);
     if (!file.is_open())
@@ -53,14 +43,17 @@ void Vault::save()
     file.write((char *)ciphertext.data(), ciphertext.size());
 }
 
-void Vault::addEntry(const Entry &entry)
+void Vault::addEntry(string name, Entry entry)
 {
-    entries[entry.name] = entry;
+    entries[std::move(name)] = std::move(entry);
 }
 
-Entry Vault::getEntry(const string &name)
+const Entry *Vault::getEntry(const string &name)
 {
-    return entries[name];
+    auto it = entries.find(name);
+    if (it == entries.end())
+        return nullptr;
+    return &it->second;
 }
 
 void Vault::deleteEntry(const string &name)

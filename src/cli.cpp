@@ -1,11 +1,13 @@
 #include <cli.h>
 #include <vault.h>
 #include <sodium.h>
+
 #include <iostream>
 #include <sstream>
 #include <limits>
 #include <termios.h>
 #include <unistd.h>
+#include <string.h>
 
 using std::cin;
 using std::cout;
@@ -14,64 +16,92 @@ using std::vector;
 
 constexpr char nl = '\n';
 
-string CLI::promptPassword(const string &prompt)
+Secret CLI::promptPassword(const char *prompt)
 {
-    cout << prompt << std::flush;
+    Secret password;
 
+    // save current settings and disable echo
     termios oldt, newt;
-    tcgetattr(STDIN_FILENO, &oldt); // save current settings
+    if (tcgetattr(STDIN_FILENO, &oldt) != 0)
+        throw std::runtime_error("tcgetattr failed");
     newt = oldt;
-    newt.c_lflag &= ~ECHO; // disable echo
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    newt.c_lflag &= ~ECHO;
 
-    string password;
-    std::getline(cin, password); // read full line
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &newt) != 0)
+        throw std::runtime_error("tcsetattr failed");
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // restore
-    cout << '\n';
+    // Low level system call to print prompt
+    if (write(STDOUT_FILENO, prompt, strlen(prompt)) < 0)
+        throw std::runtime_error("write failed");
 
+    // Read input safely
+    if (!fgets(password.cdata(), password.capacity, stdin))
+    {
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+        throw std::runtime_error("Failed to read password");
+    }
+
+    // restore terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    write(STDOUT_FILENO, "\nl", 1);
+
+    // Remove new line
+    password.data[strcspn(password.cdata(), "\n")] = 0;
+
+    // Move semantics should transfer ownership
     return password;
 }
 
 void CLI::init()
 {
-    // Get master password from user input
-    string password;
     cin.clear();
+    Secret password;
+
     while (true)
     {
-        password = promptPassword("Master password: ");
+        password = std::move(promptPassword("Master password: "));
         if (password.length() >= 16)
             break;
 
-        cout << "Password too short." << nl;
+        write(STDOUT_FILENO, "Password too short.\n", 20);
     }
-    vault = Vault("pmgr.vault", password);
+
+    vault = Vault("pmgr.vault", std::move(password));
     vault.unlock();
     vault.save(); // save to make sure a file exists.
 }
 
 void CLI::handleAdd(const string &name)
 {
-    string username, password;
+    Secret username, password;
     cout << "Username: ";
-    std::getline(cin, username);
-    cout << "Password: ";
-    std::getline(cin, password);
-
-    if (password == "generate")
+    // cin.getline to read directly into pinned memory
+    cin.getline(username.cdata(), username.capacity);
+    username.used = strlen(username.cdata());
+    cout << "Password ('generate' to randomise): ";
+    cin.getline(password.cdata(), password.capacity);
+    password.used = strlen(password.cdata());
+    if (strcmp(password.cdata(), "generate"))
         password = generatePassword();
 
-    vault.addEntry({name, username, password});
+    // vault.addEntry(Secret(value.data(), value.size()));
     vault.save();
 }
 
 void CLI::handleGet(const string &name)
 {
-    Entry entry = vault.getEntry(name);
-    cout << "Name: " + entry.name << nl;
-    cout << "Username: " + entry.username << nl;
-    cout << "Password: " + entry.password << nl;
+    const Entry *entry = vault.getEntry(name);
+    if (!entry)
+    {
+        cout << "Entry not found." << nl;
+        return;
+    }
+    cout << "Username: ";
+    cout.write(entry->username.cdata(), entry->username.length());
+    cout << nl;
+    cout << "Password: ";
+    cout.write(entry->password.cdata(), entry->password.length());
+    cout << nl;
 }
 
 void CLI::handleList()
@@ -89,18 +119,18 @@ void CLI::handleDelete(const string &name)
     vault.save();
 }
 
-string CLI::generatePassword()
+Secret CLI::generatePassword()
 {
     const string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
     const int length = 20;
-    string password;
+    Secret password;
 
     for (int i = 0; i < length; i++)
     {
         unsigned char random;
         randombytes_buf(&random, 1);
         // avoid modulo bias with randombytes_uniform from sodium
-        password += charset[randombytes_uniform(charset.size())];
+        password.append(charset[randombytes_uniform(charset.size())]);
     }
 
     return password;
@@ -137,7 +167,9 @@ void CLI::run()
         }
         else if (command == "generate" && value.length() == 0 && overflow.length() == 0)
         {
-            cout << generatePassword() << nl;
+            Secret pw = generatePassword();
+            cout.write(pw.cdata(), pw.length());
+            cout << nl;
         }
         else if (command == "list" && value.length() == 0 && overflow.length() == 0)
         {

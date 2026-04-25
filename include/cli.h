@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vault.h>
+#include <secret.h>
 
 class CLI
 {
@@ -10,11 +11,11 @@ public:
 private:
     Vault vault;
     void init();
-    std::string promptPassword(const std::string &prompt);
+    Secret promptPassword(const char *prompt);
+    void handleList();
     void handleAdd(const std::string &name);
     void handleGet(const std::string &name);
-    void handleList();
     void handleDelete(const std::string &name);
-    std::string generatePassword();
+    Secret generatePassword();
     void printCommands();
 };

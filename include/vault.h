@@ -2,13 +2,16 @@
 #include <string>
 #include <map>
 #include <vector>
-
+#include <secret.h>
 
 struct Entry
 {
-    std::string name; // may be redundant with the map key
-    std::string username;
-    std::string password;
+    Secret username;
+    Secret password;
+
+    Entry(Secret u, Secret p)
+        : username(std::move(u)), password(std::move(p)) {}
+    Entry() = default;
 };
 
 class Vault
@@ -18,19 +21,19 @@ public:
     void save();
     void lock();
 
-    void addEntry(const Entry &entry);
-    Entry getEntry(const std::string &name);
+    void addEntry(std::string name, Entry entry);
+    const Entry *getEntry(const std::string &name);
     void deleteEntry(const std::string &name);
     std::vector<std::string> listEntries();
 
-    Vault(const std::string &path, const std::string &password);
+    Vault(const std::string &path, Secret password);
     Vault() = default;
 
 private:
     std::string path;
-    std::string password;
+    Secret key;
     std::map<std::string, Entry> entries;
 
-    std::string serialize();
-    void deserialize(const std::string &data);
+    Secret serialize();
+    void deserialize(const Secret &data);
 };

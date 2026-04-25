@@ -1,16 +1,14 @@
 #pragma once
 #include <vector>
 
-// Encrypts input plaintext using XSalsa20-Poly1305.
 std::vector<unsigned char> encrypt(
-    const std::vector<unsigned char> &plaintext,
-    const std::string &password);
+    const Secret &plaintext,
+    const Secret &key);
 
-// Reverts encryption done by the encrypt function.
-std::vector<unsigned char> decrypt(
+Secret decrypt(
     const std::vector<unsigned char> &ciphertext,
-    const std::string &password);
+    const Secret &key);
 
-std::vector<unsigned char> deriveKey(
-    const std::string &password,
+Secret deriveKey(
+    const Secret &password,
     const std::vector<unsigned char> &salt);
