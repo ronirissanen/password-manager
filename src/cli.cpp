@@ -3,23 +3,24 @@
 #include <sodium.h>
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
-#include <limits>
+#include <fstream>
 #include <termios.h>
 #include <unistd.h>
 #include <string.h>
 
-using std::cin;
-using std::cout;
 using std::string;
 using std::vector;
 
-constexpr char nl = '\n';
-
+// Write helpers to avoid leaking secrets to memory with std::cout
 inline void print(const char *s)
 {
     write(STDOUT_FILENO, s, strlen(s));
+}
+
+inline void printSecret(const Secret &s)
+{
+    write(STDOUT_FILENO, s.cdata(), s.length());
 }
 
 Secret CLI::promptPassword(const char *prompt)
@@ -36,11 +37,10 @@ Secret CLI::promptPassword(const char *prompt)
     if (tcsetattr(STDIN_FILENO, TCSANOW, &newt) != 0)
         throw std::runtime_error("tcsetattr failed");
 
-    // Low level system call to print prompt
     if (write(STDOUT_FILENO, prompt, strlen(prompt)) < 0)
         throw std::runtime_error("write failed");
 
-    // Read input safely
+    // Read input safely into pinned memory
     if (!fgets(password.cdata(), password.capacity, stdin))
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
@@ -51,17 +51,15 @@ Secret CLI::promptPassword(const char *prompt)
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     write(STDOUT_FILENO, "\n", 1);
 
-    // Remove new line
+    // Remove newline and set used
     password.data[strcspn(password.cdata(), "\n")] = 0;
     password.used = strlen(password.cdata());
 
-    // Move semantics should transfer ownership
     return password;
 }
 
 void CLI::init()
 {
-    cin.clear();
     Secret password;
 
     while (true)
@@ -69,29 +67,26 @@ void CLI::init()
         password = std::move(promptPassword("Master password: "));
         if (password.length() >= 16)
             break;
-
-        write(STDOUT_FILENO, "Password too short.\n", 20);
-        char dbg[32];
-        snprintf(dbg, sizeof(dbg), "length: %zu\n", password.length());
-        write(STDOUT_FILENO, dbg, strlen(dbg));
+        print("Password too short.\n");
     }
 
     vault = Vault("pmgr.vault", std::move(password));
     vault.unlock();
-    vault.save(); // save to make sure a file exists.
+    vault.save();
 }
 
 void CLI::handleAdd(const string &name)
 {
     Secret username, password;
-    cout << "Username: ";
-    // cin.getline to read directly into pinned memory
-    cin.getline(username.cdata(), username.capacity);
-    username.used = strlen(username.cdata());
-    cout << "Password ('generate' to randomise): ";
-    cin.getline(password.cdata(), password.capacity);
 
+    print("Username: ");
+    std::cin.getline(username.cdata(), username.capacity);
+    username.used = strlen(username.cdata());
+
+    print("Password ('generate' to randomise): ");
+    std::cin.getline(password.cdata(), password.capacity);
     password.used = strlen(password.cdata());
+
     if (strcmp(password.cdata(), "generate") == 0)
         password = generatePassword();
 
@@ -104,15 +99,16 @@ void CLI::handleGet(const string &name)
     const Entry *entry = vault.getEntry(name);
     if (!entry)
     {
-        cout << "Entry not found." << nl;
+        print("Entry not found.\n");
         return;
     }
-    cout << "Username: ";
-    cout.write(entry->username.cdata(), entry->username.length());
-    cout << nl;
-    cout << "Password: ";
-    cout.write(entry->password.cdata(), entry->password.length());
-    cout << nl;
+
+    print("Username: ");
+    printSecret(entry->username);
+    print("\n");
+    print("Password: ");
+    printSecret(entry->password);
+    print("\n");
 }
 
 void CLI::handleList()
@@ -120,7 +116,8 @@ void CLI::handleList()
     vector<string> entries = vault.listEntries();
     for (const string &s : entries)
     {
-        cout << s << nl;
+        print(s.c_str());
+        print("\n");
     }
 }
 
@@ -130,21 +127,15 @@ void CLI::handleDelete(const string &name)
     vault.save();
 }
 
-/**
- * Loads eff diceware wordlist. The words are not secrets so strings can be used for convinience.
- */
 vector<string> loadWordlist(const string &path)
 {
     vector<string> words;
     std::ifstream file(path);
     if (!file.is_open())
-    {
-        // Handle the error
-    }
+        throw std::runtime_error("Failed to open wordlist.");
     string line;
     while (std::getline(file, line))
     {
-        // strip the diceware number prefix
         size_t tab = line.find('\t');
         if (tab != std::string::npos)
             words.push_back(line.substr(tab + 1));
@@ -152,12 +143,12 @@ vector<string> loadWordlist(const string &path)
     return words;
 }
 
-Secret generatePassphrase(const vector<string> &words, int count = 4)
+Secret generatePassphrase(const vector<string> &words, int count)
 {
     Secret passphrase(128);
     for (int i = 0; i < count; i++)
     {
-        const std::string &word = words[randombytes_uniform(words.size())];
+        const string &word = words[randombytes_uniform((uint32_t)words.size())];
         memcpy(passphrase.data + passphrase.used, word.data(), word.size());
         passphrase.used += word.size();
         if (i < count - 1)
@@ -173,12 +164,7 @@ Secret CLI::generatePassword()
     Secret password;
 
     for (int i = 0; i < length; i++)
-    {
-        unsigned char random;
-        randombytes_buf(&random, 1);
-        // avoid modulo bias with randombytes_uniform from sodium
-        password.append(charset[randombytes_uniform(charset.size())]);
-    }
+        password.append(charset[randombytes_uniform((uint32_t)charset.size())]);
 
     return password;
 }
@@ -186,16 +172,14 @@ Secret CLI::generatePassword()
 void CLI::run()
 {
     init();
-    string command = "";
-    string value = "";
-    string overflow = "";
+    string command, value, overflow;
+
     while (true)
     {
-        cout << "pmgr> ";
+        print("pmgr> ");
 
-        // get and parse input line
         string line;
-        getline(cin, line);
+        std::getline(std::cin, line);
         std::istringstream stream(line);
         stream >> command >> value >> overflow;
 
@@ -206,26 +190,24 @@ void CLI::run()
         else if (overflow.length() > 0)
         {
             printCommands();
-            continue;
         }
         else if (command == "help")
         {
             printCommands();
         }
-        else if (command == "generate" && value.length() == 0 && overflow.length() == 0)
+        else if (command == "generate" && value.empty())
         {
             Secret pw = generatePassword();
-            cout.write(pw.cdata(), pw.length());
-            cout << nl;
+            printSecret(pw);
+            print("\n");
         }
-        else if (command == "list" && value.length() == 0 && overflow.length() == 0)
+        else if (command == "list" && value.empty())
         {
             handleList();
         }
-        else if (value.length() == 0)
+        else if (value.empty())
         {
-            cout << "Command requires an argument." << nl;
-            continue;
+            print("Command requires an argument.\n");
         }
         else if (command == "add")
         {
@@ -241,22 +223,23 @@ void CLI::run()
         }
         else
         {
-            cout << "Invalid command. Use help to list valid commands.";
+            print("Invalid command. Use help to list valid commands.\n");
         }
 
         command = "";
         value = "";
         overflow = "";
     }
+
     vault.lock();
 }
 
 void CLI::printCommands()
 {
-    cout << "Commands:" << nl;
-    cout << "  pmgr add <name>" << nl;
-    cout << "  pmgr get <name>" << nl;
-    cout << "  pmgr list" << nl;
-    cout << "  pmgr delete <name>" << nl;
-    cout << "  pmgr generate" << nl;
+    print("Commands:\n");
+    print("  pmgr add <name>\n");
+    print("  pmgr get <name>\n");
+    print("  pmgr list\n");
+    print("  pmgr delete <name>\n");
+    print("  pmgr generate\n");
 }
