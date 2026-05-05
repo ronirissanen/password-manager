@@ -14,6 +14,8 @@ Secret deriveKey(
     const Secret &password, const vector<unsigned char> &salt)
 {
     Secret key(crypto_secretbox_KEYBYTES);
+    if (password.length() == 0)
+        throw std::runtime_error("deriveKey: empty password");
 
     if (crypto_pwhash(
             key.data,
@@ -65,35 +67,30 @@ vector<unsigned char> encrypt(const Secret &plaintext, const Secret &key)
     return ciphertext;
 }
 
-vector<unsigned char> decrypt(
-    const vector<unsigned char> &ciphertext,
-    const string &password)
+Secret decrypt(const vector<unsigned char> &ciphertext, const Secret &key)
 {
-    // peel salt first
-    vector<unsigned char> salt(ciphertext.begin(), ciphertext.begin() + crypto_pwhash_SALTBYTES);
-    vector<unsigned char> rest(ciphertext.begin() + crypto_pwhash_SALTBYTES, ciphertext.end());
-
-    auto key = deriveKey(password, salt);
-
     // if ciphertext is smaller than nonce + MAC
     // anything smaller means nonce or MAC is incomplete
     // => corrupt or truncated data
-    if (rest.size() < crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES)
+    if (ciphertext.size() < crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES)
         throw std::runtime_error("Ciphertext too short.");
 
     // peel nonce for decryption
-    vector<unsigned char> nonce(rest.begin(), rest.begin() + crypto_secretbox_NONCEBYTES);
-    vector<unsigned char> actual(rest.begin() + crypto_secretbox_NONCEBYTES, rest.end());
-    vector<unsigned char> plaintext(actual.size() - crypto_secretbox_MACBYTES);
+    vector<unsigned char> nonce(ciphertext.begin(), ciphertext.begin() + crypto_secretbox_NONCEBYTES);
+    const unsigned char *actual = ciphertext.data() + crypto_secretbox_NONCEBYTES;
+    size_t actual_size = ciphertext.size() - crypto_secretbox_NONCEBYTES;
 
-    // the decrypt function returns a zero if it succeeds
+    Secret plaintext(actual_size - crypto_secretbox_MACBYTES);
+
+    // the decrypt function, returns a zero if it succeeds
     if (crypto_secretbox_open_easy(
-            plaintext.data(),
-            actual.data(),
-            actual.size(),
+            plaintext.data,
+            actual,
+            actual_size,
             nonce.data(),
-            key.data()) != 0)
+            key.data) != 0)
         throw std::runtime_error("Decryption failed. Invalid key or tampered data.");
 
+    plaintext.used = plaintext.capacity;
     return plaintext;
 }

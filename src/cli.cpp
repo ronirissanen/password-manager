@@ -3,6 +3,7 @@
 #include <sodium.h>
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <limits>
 #include <termios.h>
@@ -15,6 +16,11 @@ using std::string;
 using std::vector;
 
 constexpr char nl = '\n';
+
+inline void print(const char *s)
+{
+    write(STDOUT_FILENO, s, strlen(s));
+}
 
 Secret CLI::promptPassword(const char *prompt)
 {
@@ -43,10 +49,11 @@ Secret CLI::promptPassword(const char *prompt)
 
     // restore terminal settings
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    write(STDOUT_FILENO, "\nl", 1);
+    write(STDOUT_FILENO, "\n", 1);
 
     // Remove new line
     password.data[strcspn(password.cdata(), "\n")] = 0;
+    password.used = strlen(password.cdata());
 
     // Move semantics should transfer ownership
     return password;
@@ -64,6 +71,9 @@ void CLI::init()
             break;
 
         write(STDOUT_FILENO, "Password too short.\n", 20);
+        char dbg[32];
+        snprintf(dbg, sizeof(dbg), "length: %zu\n", password.length());
+        write(STDOUT_FILENO, dbg, strlen(dbg));
     }
 
     vault = Vault("pmgr.vault", std::move(password));
@@ -80,11 +90,12 @@ void CLI::handleAdd(const string &name)
     username.used = strlen(username.cdata());
     cout << "Password ('generate' to randomise): ";
     cin.getline(password.cdata(), password.capacity);
+
     password.used = strlen(password.cdata());
-    if (strcmp(password.cdata(), "generate"))
+    if (strcmp(password.cdata(), "generate") == 0)
         password = generatePassword();
 
-    // vault.addEntry(Secret(value.data(), value.size()));
+    vault.addEntry(name, Entry(std::move(username), std::move(password)));
     vault.save();
 }
 
@@ -117,6 +128,42 @@ void CLI::handleDelete(const string &name)
 {
     vault.deleteEntry(name);
     vault.save();
+}
+
+/**
+ * Loads eff diceware wordlist. The words are not secrets so strings can be used for convinience.
+ */
+vector<string> loadWordlist(const string &path)
+{
+    vector<string> words;
+    std::ifstream file(path);
+    if (!file.is_open())
+    {
+        // Handle the error
+    }
+    string line;
+    while (std::getline(file, line))
+    {
+        // strip the diceware number prefix
+        size_t tab = line.find('\t');
+        if (tab != std::string::npos)
+            words.push_back(line.substr(tab + 1));
+    }
+    return words;
+}
+
+Secret generatePassphrase(const vector<string> &words, int count = 4)
+{
+    Secret passphrase(128);
+    for (int i = 0; i < count; i++)
+    {
+        const std::string &word = words[randombytes_uniform(words.size())];
+        memcpy(passphrase.data + passphrase.used, word.data(), word.size());
+        passphrase.used += word.size();
+        if (i < count - 1)
+            passphrase.data[passphrase.used++] = '-';
+    }
+    return passphrase;
 }
 
 Secret CLI::generatePassword()

@@ -9,7 +9,7 @@ add_executable(password-manager
     src/vault.cpp
     src/secure_memory.cpp
     src/cli.cpp
-
+    
 )
 
 target_include_directories(password-manager PRIVATE include)

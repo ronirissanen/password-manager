@@ -12,3 +12,5 @@ void lockMemoryPages();
 // from lingering in freed memory.
 // to be implemented
 void secureZero(void* addr, size_t size);
+
+// Am I even using these atm?

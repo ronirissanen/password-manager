@@ -31,7 +31,7 @@ public:
 
 private:
     std::string path;
-    Secret key;
+    Secret masterPassword;
     std::map<std::string, Entry> entries;
 
     Secret serialize();

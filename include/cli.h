@@ -16,6 +16,8 @@ private:
     void handleAdd(const std::string &name);
     void handleGet(const std::string &name);
     void handleDelete(const std::string &name);
+    std::vector<std::string> loadWordlist(const std::string &path);
+    Secret generatePassphrase(const std::vector<std::string> &words, int count);
     Secret generatePassword();
     void printCommands();
 };

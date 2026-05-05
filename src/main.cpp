@@ -5,8 +5,11 @@
 
 constexpr char nl = '\n';
 
-int main(int argc, char *argv[])
+int main()
 {
+
+    if (sodium_init() < 0)
+        throw std::runtime_error("libsodium init failed");
     setCoreDumpLimits();
     lockMemoryPages();
 
@@ -17,12 +20,12 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Fatal error: " << e.what() + '\n';
+        std::cerr << "Fatal error: " << e.what() << '\n';
         return 1;
     }
     catch (...)
     {
-        std::cerr << "Unknown error." + '\n';
+        std::cerr << "Unknown error." << '\n';
         return 1;
     }
 

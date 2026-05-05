@@ -3,6 +3,7 @@
 
 CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/src/cli.cpp \
   /root/projects/password-manager/include/cli.h \
+  /root/projects/password-manager/include/secret.h \
   /root/projects/password-manager/include/vault.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
@@ -79,6 +80,7 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/c++/13/cstddef \
   /usr/include/c++/13/cstdio \
   /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/cstring \
   /usr/include/c++/13/cwchar \
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
@@ -189,6 +191,8 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/termios.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
@@ -302,6 +306,8 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
 
 CMakeFiles/password-manager.dir/src/crypto.cpp.o: /root/projects/password-manager/src/crypto.cpp \
+  /root/projects/password-manager/include/crypto.h \
+  /root/projects/password-manager/include/secret.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -374,8 +380,10 @@ CMakeFiles/password-manager.dir/src/crypto.cpp.o: /root/projects/password-manage
   /usr/include/c++/13/cerrno \
   /usr/include/c++/13/clocale \
   /usr/include/c++/13/cstddef \
+  /usr/include/c++/13/cstdint \
   /usr/include/c++/13/cstdio \
   /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/cstring \
   /usr/include/c++/13/cwchar \
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
@@ -483,6 +491,8 @@ CMakeFiles/password-manager.dir/src/crypto.cpp.o: /root/projects/password-manage
   /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
@@ -578,6 +588,7 @@ CMakeFiles/password-manager.dir/src/crypto.cpp.o: /root/projects/password-manage
 
 CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/src/main.cpp \
   /root/projects/password-manager/include/cli.h \
+  /root/projects/password-manager/include/secret.h \
   /root/projects/password-manager/include/secure_memory.h \
   /root/projects/password-manager/include/vault.h \
   /usr/include/alloca.h \
@@ -654,6 +665,7 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/c++/13/cstddef \
   /usr/include/c++/13/cstdio \
   /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/cstring \
   /usr/include/c++/13/cwchar \
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
@@ -675,6 +687,7 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/c++/13/ostream \
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/stdexcept \
+  /usr/include/c++/13/stdlib.h \
   /usr/include/c++/13/streambuf \
   /usr/include/c++/13/string \
   /usr/include/c++/13/string_view \
@@ -688,13 +701,80 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/limits.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/limits.h \
   /usr/include/locale.h \
   /usr/include/pthread.h \
   /usr/include/sched.h \
+  /usr/include/sodium.h \
+  /usr/include/sodium/core.h \
+  /usr/include/sodium/crypto_aead_aes256gcm.h \
+  /usr/include/sodium/crypto_aead_chacha20poly1305.h \
+  /usr/include/sodium/crypto_aead_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_auth.h \
+  /usr/include/sodium/crypto_auth_hmacsha256.h \
+  /usr/include/sodium/crypto_auth_hmacsha512.h \
+  /usr/include/sodium/crypto_auth_hmacsha512256.h \
+  /usr/include/sodium/crypto_box.h \
+  /usr/include/sodium/crypto_box_curve25519xchacha20poly1305.h \
+  /usr/include/sodium/crypto_box_curve25519xsalsa20poly1305.h \
+  /usr/include/sodium/crypto_core_ed25519.h \
+  /usr/include/sodium/crypto_core_hchacha20.h \
+  /usr/include/sodium/crypto_core_hsalsa20.h \
+  /usr/include/sodium/crypto_core_ristretto255.h \
+  /usr/include/sodium/crypto_core_salsa20.h \
+  /usr/include/sodium/crypto_core_salsa2012.h \
+  /usr/include/sodium/crypto_core_salsa208.h \
+  /usr/include/sodium/crypto_generichash.h \
+  /usr/include/sodium/crypto_generichash_blake2b.h \
+  /usr/include/sodium/crypto_hash.h \
+  /usr/include/sodium/crypto_hash_sha256.h \
+  /usr/include/sodium/crypto_hash_sha512.h \
+  /usr/include/sodium/crypto_kdf.h \
+  /usr/include/sodium/crypto_kdf_blake2b.h \
+  /usr/include/sodium/crypto_kx.h \
+  /usr/include/sodium/crypto_onetimeauth.h \
+  /usr/include/sodium/crypto_onetimeauth_poly1305.h \
+  /usr/include/sodium/crypto_pwhash.h \
+  /usr/include/sodium/crypto_pwhash_argon2i.h \
+  /usr/include/sodium/crypto_pwhash_argon2id.h \
+  /usr/include/sodium/crypto_pwhash_scryptsalsa208sha256.h \
+  /usr/include/sodium/crypto_scalarmult.h \
+  /usr/include/sodium/crypto_scalarmult_curve25519.h \
+  /usr/include/sodium/crypto_scalarmult_ed25519.h \
+  /usr/include/sodium/crypto_scalarmult_ristretto255.h \
+  /usr/include/sodium/crypto_secretbox.h \
+  /usr/include/sodium/crypto_secretbox_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_secretbox_xsalsa20poly1305.h \
+  /usr/include/sodium/crypto_secretstream_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_shorthash.h \
+  /usr/include/sodium/crypto_shorthash_siphash24.h \
+  /usr/include/sodium/crypto_sign.h \
+  /usr/include/sodium/crypto_sign_ed25519.h \
+  /usr/include/sodium/crypto_stream.h \
+  /usr/include/sodium/crypto_stream_chacha20.h \
+  /usr/include/sodium/crypto_stream_salsa20.h \
+  /usr/include/sodium/crypto_stream_salsa2012.h \
+  /usr/include/sodium/crypto_stream_salsa208.h \
+  /usr/include/sodium/crypto_stream_xchacha20.h \
+  /usr/include/sodium/crypto_stream_xsalsa20.h \
+  /usr/include/sodium/crypto_verify_16.h \
+  /usr/include/sodium/crypto_verify_32.h \
+  /usr/include/sodium/crypto_verify_64.h \
+  /usr/include/sodium/export.h \
+  /usr/include/sodium/randombytes.h \
+  /usr/include/sodium/randombytes_internal_random.h \
+  /usr/include/sodium/randombytes_sysrandom.h \
+  /usr/include/sodium/runtime.h \
+  /usr/include/sodium/utils.h \
+  /usr/include/sodium/version.h \
   /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
@@ -708,8 +788,11 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/locale.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
@@ -717,6 +800,8 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
@@ -753,11 +838,13 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
   /usr/include/x86_64-linux-gnu/bits/typesizes.h \
   /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -775,8 +862,11 @@ CMakeFiles/password-manager.dir/src/main.cpp.o: /root/projects/password-manager/
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
 
 CMakeFiles/password-manager.dir/src/secure_memory.cpp.o: /root/projects/password-manager/src/secure_memory.cpp \
   /usr/include/alloca.h \
@@ -986,7 +1076,9 @@ CMakeFiles/password-manager.dir/src/secure_memory.cpp.o: /root/projects/password
 
 CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager/src/vault.cpp \
   /root/projects/password-manager/include/crypto.h \
+  /root/projects/password-manager/include/secret.h \
   /root/projects/password-manager/include/secure_memory.h \
+  /root/projects/password-manager/include/serial.h \
   /root/projects/password-manager/include/vault.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
@@ -1063,8 +1155,10 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/c++/13/cerrno \
   /usr/include/c++/13/clocale \
   /usr/include/c++/13/cstddef \
+  /usr/include/c++/13/cstdint \
   /usr/include/c++/13/cstdio \
   /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/cstring \
   /usr/include/c++/13/cwchar \
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
@@ -1087,6 +1181,7 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/sstream \
   /usr/include/c++/13/stdexcept \
+  /usr/include/c++/13/stdlib.h \
   /usr/include/c++/13/streambuf \
   /usr/include/c++/13/string \
   /usr/include/c++/13/string_view \
@@ -1100,13 +1195,80 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/limits.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/limits.h \
   /usr/include/locale.h \
   /usr/include/pthread.h \
   /usr/include/sched.h \
+  /usr/include/sodium.h \
+  /usr/include/sodium/core.h \
+  /usr/include/sodium/crypto_aead_aes256gcm.h \
+  /usr/include/sodium/crypto_aead_chacha20poly1305.h \
+  /usr/include/sodium/crypto_aead_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_auth.h \
+  /usr/include/sodium/crypto_auth_hmacsha256.h \
+  /usr/include/sodium/crypto_auth_hmacsha512.h \
+  /usr/include/sodium/crypto_auth_hmacsha512256.h \
+  /usr/include/sodium/crypto_box.h \
+  /usr/include/sodium/crypto_box_curve25519xchacha20poly1305.h \
+  /usr/include/sodium/crypto_box_curve25519xsalsa20poly1305.h \
+  /usr/include/sodium/crypto_core_ed25519.h \
+  /usr/include/sodium/crypto_core_hchacha20.h \
+  /usr/include/sodium/crypto_core_hsalsa20.h \
+  /usr/include/sodium/crypto_core_ristretto255.h \
+  /usr/include/sodium/crypto_core_salsa20.h \
+  /usr/include/sodium/crypto_core_salsa2012.h \
+  /usr/include/sodium/crypto_core_salsa208.h \
+  /usr/include/sodium/crypto_generichash.h \
+  /usr/include/sodium/crypto_generichash_blake2b.h \
+  /usr/include/sodium/crypto_hash.h \
+  /usr/include/sodium/crypto_hash_sha256.h \
+  /usr/include/sodium/crypto_hash_sha512.h \
+  /usr/include/sodium/crypto_kdf.h \
+  /usr/include/sodium/crypto_kdf_blake2b.h \
+  /usr/include/sodium/crypto_kx.h \
+  /usr/include/sodium/crypto_onetimeauth.h \
+  /usr/include/sodium/crypto_onetimeauth_poly1305.h \
+  /usr/include/sodium/crypto_pwhash.h \
+  /usr/include/sodium/crypto_pwhash_argon2i.h \
+  /usr/include/sodium/crypto_pwhash_argon2id.h \
+  /usr/include/sodium/crypto_pwhash_scryptsalsa208sha256.h \
+  /usr/include/sodium/crypto_scalarmult.h \
+  /usr/include/sodium/crypto_scalarmult_curve25519.h \
+  /usr/include/sodium/crypto_scalarmult_ed25519.h \
+  /usr/include/sodium/crypto_scalarmult_ristretto255.h \
+  /usr/include/sodium/crypto_secretbox.h \
+  /usr/include/sodium/crypto_secretbox_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_secretbox_xsalsa20poly1305.h \
+  /usr/include/sodium/crypto_secretstream_xchacha20poly1305.h \
+  /usr/include/sodium/crypto_shorthash.h \
+  /usr/include/sodium/crypto_shorthash_siphash24.h \
+  /usr/include/sodium/crypto_sign.h \
+  /usr/include/sodium/crypto_sign_ed25519.h \
+  /usr/include/sodium/crypto_stream.h \
+  /usr/include/sodium/crypto_stream_chacha20.h \
+  /usr/include/sodium/crypto_stream_salsa20.h \
+  /usr/include/sodium/crypto_stream_salsa2012.h \
+  /usr/include/sodium/crypto_stream_salsa208.h \
+  /usr/include/sodium/crypto_stream_xchacha20.h \
+  /usr/include/sodium/crypto_stream_xsalsa20.h \
+  /usr/include/sodium/crypto_verify_16.h \
+  /usr/include/sodium/crypto_verify_32.h \
+  /usr/include/sodium/crypto_verify_64.h \
+  /usr/include/sodium/export.h \
+  /usr/include/sodium/randombytes.h \
+  /usr/include/sodium/randombytes_internal_random.h \
+  /usr/include/sodium/randombytes_sysrandom.h \
+  /usr/include/sodium/runtime.h \
+  /usr/include/sodium/utils.h \
+  /usr/include/sodium/version.h \
   /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
@@ -1120,8 +1282,11 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/locale.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
   /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
@@ -1129,6 +1294,8 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
@@ -1165,11 +1332,13 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
   /usr/include/x86_64-linux-gnu/bits/typesizes.h \
   /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
@@ -1189,8 +1358,11 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
 
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
@@ -1213,15 +1385,11 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/mman-map-flags-generic.h:
 
-/usr/include/x86_64-linux-gnu/bits/mman-linux.h:
-
-/usr/include/strings.h:
-
-/usr/include/string.h:
-
 /root/projects/password-manager/src/secure_memory.cpp:
 
 /root/projects/password-manager/include/secure_memory.h:
+
+/usr/include/c++/13/cstdint:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
 
@@ -1277,9 +1445,17 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
-/usr/include/c++/13/bits/ostream.tcc:
+/usr/include/x86_64-linux-gnu/sys/ttydefaults.h:
 
-/usr/include/sodium/crypto_stream_xsalsa20.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
+
+/usr/include/c++/13/bits/ostream.tcc:
 
 /usr/include/pthread.h:
 
@@ -1353,8 +1529,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/ext/string_conversions.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
-
 /usr/include/c++/13/cctype:
 
 /usr/include/sodium/crypto_verify_64.h:
@@ -1371,11 +1545,9 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/debug/assertions.h:
 
+/usr/include/c++/13/cstring:
+
 /usr/include/c++/13/cstdio:
-
-/usr/include/x86_64-linux-gnu/sys/ttydefaults.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
 /usr/include/c++/13/clocale:
 
@@ -1384,8 +1556,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/c++/13/cerrno:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-least.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
 
 /usr/include/c++/13/stdlib.h:
 
@@ -1483,11 +1653,21 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /root/projects/password-manager/include/cli.h:
 
-/usr/include/sodium/crypto_box_curve25519xchacha20poly1305.h:
-
-/usr/include/sodium/crypto_kx.h:
-
 /usr/include/sodium/randombytes.h:
+
+/usr/include/sodium/crypto_stream_xsalsa20.h:
+
+/usr/include/x86_64-linux-gnu/bits/mman-linux.h:
+
+/root/projects/password-manager/include/secret.h:
+
+/usr/include/linux/limits.h:
+
+/root/projects/password-manager/src/cli.cpp:
+
+/usr/include/errno.h:
+
+/usr/include/sodium/crypto_auth_hmacsha512.h:
 
 /usr/include/c++/13/bits/basic_string.tcc:
 
@@ -1519,6 +1699,10 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/hash_bytes.h:
 
+/usr/include/c++/13/bits/ios_base.h:
+
+/usr/include/x86_64-linux-gnu/bits/termios-c_cflag.h:
+
 /usr/include/linux/close_range.h:
 
 /usr/include/c++/13/bits/stringfwd.h:
@@ -1533,21 +1717,11 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/move.h:
 
-/usr/include/linux/limits.h:
-
-/root/projects/password-manager/src/cli.cpp:
-
-/usr/include/errno.h:
-
-/usr/include/sodium/crypto_auth_hmacsha512.h:
-
-/usr/include/x86_64-linux-gnu/bits/termios-c_cflag.h:
-
-/usr/include/c++/13/bits/ios_base.h:
-
 /usr/include/c++/13/bits/basic_ios.h:
 
 /usr/include/x86_64-linux-gnu/bits/time64.h:
+
+/root/projects/password-manager/include/serial.h:
 
 /usr/include/c++/13/tuple:
 
@@ -1597,14 +1771,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/ostream_insert.h:
 
-/usr/include/c++/13/backward/binders.h:
-
-/usr/include/sodium/crypto_aead_chacha20poly1305.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h:
-
-/usr/include/sodium/crypto_shorthash.h:
-
 /usr/include/c++/13/stdexcept:
 
 /usr/include/linux/errno.h:
@@ -1620,6 +1786,18 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/c++/13/bits/stl_construct.h:
 
 /usr/include/sodium/runtime.h:
+
+/usr/include/c++/13/backward/binders.h:
+
+/usr/include/sodium/crypto_aead_chacha20poly1305.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h:
+
+/usr/include/sodium/crypto_shorthash.h:
+
+/usr/include/sodium/crypto_kx.h:
+
+/usr/include/sodium/crypto_box_curve25519xchacha20poly1305.h:
 
 /usr/include/c++/13/bits/vector.tcc:
 
@@ -1667,9 +1845,9 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/sodium/crypto_onetimeauth_poly1305.h:
 
-/usr/include/sched.h:
-
 /usr/include/wctype.h:
+
+/usr/include/sched.h:
 
 /usr/include/sodium/crypto_pwhash.h:
 
@@ -1729,6 +1907,12 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/stdlib.h:
 
+/usr/include/string.h:
+
+/usr/include/strings.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
 /usr/include/termios.h:
 
 /usr/include/sodium/crypto_kdf_blake2b.h:
@@ -1757,9 +1941,9 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
-/usr/include/sodium/crypto_aead_xchacha20poly1305.h:
-
 /usr/include/c++/13/bits/requires_hosted.h:
+
+/usr/include/sodium/crypto_aead_xchacha20poly1305.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
@@ -1792,8 +1976,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
 /usr/include/x86_64-linux-gnu/bits/termios-c_iflag.h:
 
@@ -1832,5 +2014,3 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/error_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:

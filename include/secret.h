@@ -26,7 +26,7 @@ public:
     }
 
     // Move constructor -- transfers ownership of the memory
-    Secret(Secret &&other) noexcept : capacity(other.capacity), used(other.used)
+    Secret(Secret &&other) noexcept : data(other.data), capacity(other.capacity), used(other.used)
     {
         other.data = nullptr;
         other.capacity = 0;
