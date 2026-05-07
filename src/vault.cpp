@@ -35,8 +35,9 @@ void Vault::unlock()
         (std::istreambuf_iterator<char>(file)),
         std::istreambuf_iterator<char>());
 
-    Secret derived(deriveKey(masterPassword, salt));
-    Secret plaintext(decrypt(ciphertext, derived));
+    Secret derived = deriveKey(masterPassword, salt);
+    Secret plaintext = decrypt(ciphertext, derived);
+    derived.wipe();
     deserialize(plaintext);
     plaintext.wipe();
 }
@@ -49,6 +50,7 @@ void Vault::save()
     Secret derived = deriveKey(masterPassword, salt);
     Secret plaintext = serialize();
     vector<unsigned char> ciphertext = encrypt(plaintext, derived);
+    derived.wipe();
     plaintext.wipe();
 
     std::ofstream file(path, std::ios::binary);

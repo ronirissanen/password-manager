@@ -18,6 +18,7 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/c++/13/bits/basic_string.tcc \
   /usr/include/c++/13/bits/char_traits.h \
   /usr/include/c++/13/bits/charconv.h \
+  /usr/include/c++/13/bits/codecvt.h \
   /usr/include/c++/13/bits/concept_check.h \
   /usr/include/c++/13/bits/cpp_type_traits.h \
   /usr/include/c++/13/bits/cxxabi_forced.h \
@@ -26,6 +27,7 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/c++/13/bits/exception.h \
   /usr/include/c++/13/bits/exception_defines.h \
   /usr/include/c++/13/bits/exception_ptr.h \
+  /usr/include/c++/13/bits/fstream.tcc \
   /usr/include/c++/13/bits/functexcept.h \
   /usr/include/c++/13/bits/functional_hash.h \
   /usr/include/c++/13/bits/hash_bytes.h \
@@ -92,12 +94,12 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/c++/13/ext/numeric_traits.h \
   /usr/include/c++/13/ext/string_conversions.h \
   /usr/include/c++/13/ext/type_traits.h \
+  /usr/include/c++/13/fstream \
   /usr/include/c++/13/initializer_list \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
   /usr/include/c++/13/istream \
-  /usr/include/c++/13/limits \
   /usr/include/c++/13/map \
   /usr/include/c++/13/new \
   /usr/include/c++/13/ostream \
@@ -282,8 +284,10 @@ CMakeFiles/password-manager.dir/src/cli.cpp.o: /root/projects/password-manager/s
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
@@ -1365,10 +1369,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
 
 
-/usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
-
-/usr/include/c++/13/bits/fstream.tcc:
-
 /root/projects/password-manager/src/vault.cpp:
 
 /usr/include/x86_64-linux-gnu/sys/mman.h:
@@ -1419,6 +1419,8 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:
 
+/usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
+
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
 /root/projects/password-manager/include/crypto.h:
@@ -1441,6 +1443,8 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
@@ -1455,7 +1459,7 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
-/usr/include/c++/13/bits/ostream.tcc:
+/usr/include/x86_64-linux-gnu/bits/types/error_t.h:
 
 /usr/include/pthread.h:
 
@@ -1491,10 +1495,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/sodium/crypto_secretbox.h:
 
-/usr/include/sodium/crypto_aead_aes256gcm.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
 /usr/include/c++/13/new:
 
 /usr/include/c++/13/ext/alloc_traits.h:
@@ -1504,10 +1504,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/c++/13/bits/refwrap.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
-
-/usr/include/c++/13/limits:
 
 /usr/include/features-time64.h:
 
@@ -1579,17 +1575,15 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/std_abs.h:
 
-/root/projects/password-manager/src/main.cpp:
-
-/usr/include/c++/13/bits/stl_vector.h:
-
 /usr/include/c++/13/bits/stl_map.h:
 
-/usr/include/c++/13/bits/codecvt.h:
+/usr/include/c++/13/istream:
 
-/usr/include/c++/13/bits/stl_tree.h:
+/usr/include/sodium/crypto_auth_hmacsha256.h:
 
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
 
 /usr/include/c++/13/bits/alloc_traits.h:
 
@@ -1645,13 +1639,15 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/sodium/crypto_stream_salsa208.h:
 
-/usr/include/c++/13/istream:
-
-/usr/include/sodium/crypto_auth_hmacsha256.h:
-
 /usr/include/c++/13/bits/ptr_traits.h:
 
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
 /root/projects/password-manager/include/cli.h:
+
+/usr/include/c++/13/bits/stl_iterator_base_funcs.h:
+
+/usr/include/asm-generic/errno-base.h:
 
 /usr/include/sodium/randombytes.h:
 
@@ -1669,6 +1665,12 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/sodium/crypto_auth_hmacsha512.h:
 
+/usr/include/c++/13/bits/ostream.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/sodium/crypto_aead_aes256gcm.h:
+
 /usr/include/c++/13/bits/basic_string.tcc:
 
 /usr/include/alloca.h:
@@ -1678,14 +1680,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /root/projects/password-manager/include/vault.h:
 
 /usr/include/c++/13/cwchar:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/asm-generic/errno-base.h:
-
-/usr/include/c++/13/bits/stl_iterator_base_funcs.h:
 
 /usr/include/c++/13/iosfwd:
 
@@ -1697,12 +1691,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/sstream.tcc:
 
-/usr/include/c++/13/bits/hash_bytes.h:
-
-/usr/include/c++/13/bits/ios_base.h:
-
-/usr/include/x86_64-linux-gnu/bits/termios-c_cflag.h:
-
 /usr/include/linux/close_range.h:
 
 /usr/include/c++/13/bits/stringfwd.h:
@@ -1713,9 +1701,23 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/c++/13/bits/locale_facets.tcc:
 
+/usr/include/c++/13/bits/hash_bytes.h:
+
+/usr/include/c++/13/bits/ios_base.h:
+
+/usr/include/x86_64-linux-gnu/bits/termios-c_cflag.h:
+
 /usr/include/c++/13/type_traits:
 
 /usr/include/c++/13/bits/move.h:
+
+/root/projects/password-manager/src/main.cpp:
+
+/usr/include/c++/13/bits/stl_vector.h:
+
+/usr/include/c++/13/bits/stl_tree.h:
+
+/usr/include/c++/13/bits/codecvt.h:
 
 /usr/include/c++/13/bits/basic_ios.h:
 
@@ -1740,6 +1742,10 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/ctype.h:
 
 /usr/include/sodium/crypto_sign_ed25519.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
+
+/usr/include/c++/13/sstream:
 
 /usr/include/c++/13/bits/allocator.h:
 
@@ -1776,6 +1782,8 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/linux/errno.h:
 
 /usr/include/c++/13/debug/debug.h:
+
+/usr/include/c++/13/bits/fstream.tcc:
 
 /usr/include/c++/13/cstdlib:
 
@@ -1953,10 +1961,6 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 
 /usr/include/x86_64-linux-gnu/bits/local_lim.h:
 
-/usr/include/c++/13/sstream:
-
-/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
 /usr/include/x86_64-linux-gnu/bits/posix_opt.h:
@@ -2012,5 +2016,3 @@ CMakeFiles/password-manager.dir/src/vault.cpp.o: /root/projects/password-manager
 /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/error_t.h:

@@ -12,6 +12,9 @@
 using std::string;
 using std::vector;
 
+// The compiler may not inline these due to syscalls write and read,
+// I was just lazy with updating the .h file.
+
 // Write helpers to avoid leaking secrets to memory with std::cout
 inline void print(const char *s)
 {
@@ -21,6 +24,30 @@ inline void print(const char *s)
 inline void printSecret(const Secret &s)
 {
     write(STDOUT_FILENO, s.cdata(), s.length());
+}
+
+// Read a line from stdin into a Secret without going through buffers
+inline void readLine(Secret &s)
+{
+    s.wipe();
+    char c;
+    while (s.used < s.capacity - 1)
+    {
+        ssize_t n = read(STDIN_FILENO, &c, 1);
+        if (n <= 0 || c == '\n')
+            break;
+        s.append(c);
+        sodium_memzero(&c, 1);
+    }
+}
+
+inline string readString()
+{
+    string result;
+    char c;
+    while (read(STDIN_FILENO, &c, 1) == 1 && c != '\n')
+        result += c;
+    return result;
 }
 
 Secret CLI::promptPassword(const char *prompt)
@@ -40,20 +67,11 @@ Secret CLI::promptPassword(const char *prompt)
     if (write(STDOUT_FILENO, prompt, strlen(prompt)) < 0)
         throw std::runtime_error("write failed");
 
-    // Read input safely into pinned memory
-    if (!fgets(password.cdata(), password.capacity, stdin))
-    {
-        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-        throw std::runtime_error("Failed to read password");
-    }
+    readLine(password);
 
     // restore terminal settings
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     write(STDOUT_FILENO, "\n", 1);
-
-    // Remove newline and set used
-    password.data[strcspn(password.cdata(), "\n")] = 0;
-    password.used = strlen(password.cdata());
 
     return password;
 }
@@ -80,15 +98,17 @@ void CLI::handleAdd(const string &name)
     Secret username, password;
 
     print("Username: ");
-    std::cin.getline(username.cdata(), username.capacity);
-    username.used = strlen(username.cdata());
+    readLine(username);
 
-    print("Password ('generate' to randomise): ");
-    std::cin.getline(password.cdata(), password.capacity);
-    password.used = strlen(password.cdata());
+    print("Password ('phrase' or 'word' to randomise): ");
+    readLine(password);
 
-    if (strcmp(password.cdata(), "generate") == 0)
+    // Note: can be fragile since Secret does not formally guarantee a null terminator
+    if (strcmp(password.cdata(), "word") == 0)
         password = generatePassword();
+
+    if (strcmp(password.cdata(), "phrase") == 0)
+        password = generatePassphrase(wordlist);
 
     vault.addEntry(name, Entry(std::move(username), std::move(password)));
     vault.save();
@@ -111,7 +131,7 @@ void CLI::handleGet(const string &name)
     print("\n");
 }
 
-void CLI::handleList()
+void CLI::handleList(const string &_)
 {
     vector<string> entries = vault.listEntries();
     for (const string &s : entries)
@@ -127,7 +147,7 @@ void CLI::handleDelete(const string &name)
     vault.save();
 }
 
-vector<string> loadWordlist(const string &path)
+vector<string> CLI::loadWordlist(const string &path)
 {
     vector<string> words;
     std::ifstream file(path);
@@ -143,7 +163,7 @@ vector<string> loadWordlist(const string &path)
     return words;
 }
 
-Secret generatePassphrase(const vector<string> &words, int count)
+Secret CLI::generatePassphrase(const vector<string> &words, int count)
 {
     Secret passphrase(128);
     for (int i = 0; i < count; i++)
@@ -169,72 +189,66 @@ Secret CLI::generatePassword()
     return password;
 }
 
+void CLI::printPassword(const string &_)
+{
+    Secret pw = generatePassword();
+    printSecret(pw);
+    print("\n");
+}
+
+void CLI::printPassphrase(const string &_)
+{
+    Secret pw = generatePassphrase(wordlist);
+    printSecret(pw);
+    print("\n");
+}
+
 void CLI::run()
 {
     init();
-    string command, value, overflow;
+    wordlist = loadWordlist("eff_large_wordlist.txt");
 
+    static const Command commands[] = {
+        {"add", true, &CLI::handleAdd},
+        {"get", true, &CLI::handleGet},
+        {"delete", true, &CLI::handleDelete},
+        {"list", false, &CLI::handleList},
+        {"password", false, &CLI::printPassword},
+        {"passphrase", false, &CLI::printPassphrase},
+        {"help", false, &CLI::printCommands},
+    };
+
+    // Control loop
     while (true)
     {
         print("pmgr> ");
 
-        string line;
-        std::getline(std::cin, line);
+        string line = readString();
         std::istringstream stream(line);
+        string command, value, overflow;
         stream >> command >> value >> overflow;
 
-        if (command == "exit" || command == "quit")
+        bool found = false;
+        for (const auto &cmd : commands)
         {
-            break;
+            if (command == cmd.name)
+            {
+                if (cmd.requires_value && value.empty())
+                    print("Command requires an argument.\n");
+                else
+                    (this->*cmd.handler)(value);
+                found = true;
+                break;
+            }
         }
-        else if (overflow.length() > 0)
-        {
-            printCommands();
-        }
-        else if (command == "help")
-        {
-            printCommands();
-        }
-        else if (command == "generate" && value.empty())
-        {
-            Secret pw = generatePassword();
-            printSecret(pw);
-            print("\n");
-        }
-        else if (command == "list" && value.empty())
-        {
-            handleList();
-        }
-        else if (value.empty())
-        {
-            print("Command requires an argument.\n");
-        }
-        else if (command == "add")
-        {
-            handleAdd(value);
-        }
-        else if (command == "get")
-        {
-            handleGet(value);
-        }
-        else if (command == "delete")
-        {
-            handleDelete(value);
-        }
-        else
-        {
-            print("Invalid command. Use help to list valid commands.\n");
-        }
-
-        command = "";
-        value = "";
-        overflow = "";
+        if (!found)
+            print("Invalid command, 'help' for list of commands.\n");
     }
 
     vault.lock();
 }
 
-void CLI::printCommands()
+void CLI::printCommands(const string &_)
 {
     print("Commands:\n");
     print("  pmgr add <name>\n");

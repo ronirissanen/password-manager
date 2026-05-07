@@ -23,8 +23,8 @@ Secret deriveKey(
             reinterpret_cast<const char *>(password.data),
             password.length(),
             salt.data(),
-            crypto_pwhash_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_MEMLIMIT_INTERACTIVE,
+            crypto_pwhash_OPSLIMIT_MODERATE,    // moderate limits are fine for cli ux
+            crypto_pwhash_MEMLIMIT_MODERATE,
             crypto_pwhash_ALG_DEFAULT) != 0)
         throw std::runtime_error("Key derivation failed.");
 
