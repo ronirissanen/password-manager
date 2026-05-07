@@ -12,11 +12,13 @@ public:
     size_t capacity;
     size_t used;
 
+    // Constructor allocates memory using libsodium's secure allocator
     explicit Secret(size_t cap = 256) : capacity(cap)
     {
         data = (unsigned char *)sodium_malloc(capacity);
         if (!data)
             throw std::runtime_error("sodium_malloc failed");
+        // Clear before use
         sodium_memzero(data, capacity);
     }
 
@@ -25,7 +27,7 @@ public:
         memcpy(data, src, len);
     }
 
-    // Move constructor -- transfers ownership of the memory
+    // Move constructor -- transfers ownership of the secure buffer
     Secret(Secret &&other) noexcept : data(other.data), capacity(other.capacity), used(other.used)
     {
         other.data = nullptr;
@@ -33,7 +35,7 @@ public:
         other.used = 0;
     }
 
-    // Move assignment
+    // Move assignment -- transfers ownership and cleans up existing memory
     Secret &operator=(Secret &&other) noexcept
     {
         if (this != &other)
@@ -53,8 +55,7 @@ public:
         return *this;
     }
 
-    // Destructor for exceptions and early returns
-    // wipes (and unpins) memory
+    // Destructor ensures sensitive memory is wiped before being freed
     ~Secret()
     {
         wipe();

@@ -13,9 +13,11 @@ private:
     {
         const char *name;
         bool requires_value;
-        void (CLI::*handler)(const string &);
+        void (CLI::*handler)(const std::string &);
     };
+    static const Command commands[];
 
+    pid_t clipboardTimer;
     std::vector<std::string> wordlist;
     Vault vault;
     void init();
@@ -26,9 +28,12 @@ private:
 
     void handleList(const std::string &_);
     void handleAdd(const std::string &name);
-    void handleGet(const std::string &name);
+    void handleShow(const std::string &name);
     void handleDelete(const std::string &name);
-    void printPassphrase(const string &_);
-    void printPassword(const string &_);
+    void handleCopy(const std::string &name);
+    void copyToClipboard(const Secret &s);
+    void clearClipboard();
+    void printPassphrase(const std::string &_);
+    void printPassword(const std::string &_);
     void printCommands(const std::string &_);
 };

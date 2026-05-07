@@ -1,33 +1,44 @@
-#include <cli.h>
-#include <vault.h>
-#include <sodium.h>
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
+#include <sodium.h>
+#include <sys/wait.h>
+#include <signal.h>
+
 #include <termios.h>
 #include <unistd.h>
 #include <string.h>
+#include <cli.h>
+#include <vault.h>
 
 using std::string;
 using std::vector;
 
-// The compiler may not inline these due to syscalls write and read,
-// I was just lazy with updating the .h file.
+const CLI::Command CLI::commands[] = {
+    {"add", true, &CLI::handleAdd},
+    {"show", true, &CLI::handleShow},
+    {"copy", true, &CLI::handleCopy},
+    {"delete", true, &CLI::handleDelete},
+    {"list", false, &CLI::handleList},
+    {"password", false, &CLI::printPassword},
+    {"passphrase", false, &CLI::printPassphrase},
+    {"help", false, &CLI::printCommands},
+};
 
 // Write helpers to avoid leaking secrets to memory with std::cout
-inline void print(const char *s)
+void print(const char *s)
 {
     write(STDOUT_FILENO, s, strlen(s));
 }
 
-inline void printSecret(const Secret &s)
+void printSecret(const Secret &s)
 {
     write(STDOUT_FILENO, s.cdata(), s.length());
 }
 
 // Read a line from stdin into a Secret without going through buffers
-inline void readLine(Secret &s)
+void readLine(Secret &s)
 {
     s.wipe();
     char c;
@@ -114,7 +125,7 @@ void CLI::handleAdd(const string &name)
     vault.save();
 }
 
-void CLI::handleGet(const string &name)
+void CLI::handleShow(const string &name)
 {
     const Entry *entry = vault.getEntry(name);
     if (!entry)
@@ -203,20 +214,79 @@ void CLI::printPassphrase(const string &_)
     print("\n");
 }
 
+void CLI::handleCopy(const string &name)
+{
+    const Entry *entry = vault.getEntry(name);
+    if (!entry)
+    {
+        print("Name not found.");
+        return;
+    }
+    copyToClipboard(entry->username);
+    print("Username copied. Press enter to copy password.\n");
+    readString(); // readString reads until newline (enter)
+
+    copyToClipboard(entry->password);
+    print("Password copied. Press enter to clear clipboard.\n");
+    readString();
+
+    clearClipboard();
+}
+
+const char *clipCommand()
+{
+    static const char *cmd = nullptr;
+    if (cmd)
+        return cmd;
+
+    if (system("which xclip > /dev/null 2>&1") == 0)
+        cmd = "xclip -selection clipboard";
+    else if (system("which clip.exe > /dev/null 2>&1") == 0)
+        cmd = "clip.exe";
+    else
+        throw std::runtime_error("No clipboard utility found");
+
+    return cmd;
+}
+
+void CLI::copyToClipboard(const Secret &s)
+{
+    // kill previous timer if still running
+    if (clipboardTimer > 0)
+    {
+        kill(clipboardTimer, SIGTERM);
+        waitpid(clipboardTimer, nullptr, 0);
+    }
+
+    FILE *pipe = popen(clipCommand(), "w");
+    if (!pipe)
+        throw std::runtime_error("Clipboard not available.");
+    fwrite(s.data, 1, s.used, pipe);
+    fflush(pipe);
+    pclose(pipe);
+
+    clipboardTimer = fork();
+    if (clipboardTimer == 0)
+    {
+        sleep(30);
+        clearClipboard();
+        exit(0);
+    }
+}
+
+void CLI::clearClipboard()
+{
+    FILE *pipe = popen(clipCommand(), "w");
+    if (!pipe)
+        throw std::runtime_error("Clipboard not available.");
+    pclose(pipe); // writes nothing, clears clipboard
+}
+
 void CLI::run()
 {
     init();
     wordlist = loadWordlist("eff_large_wordlist.txt");
-
-    static const Command commands[] = {
-        {"add", true, &CLI::handleAdd},
-        {"get", true, &CLI::handleGet},
-        {"delete", true, &CLI::handleDelete},
-        {"list", false, &CLI::handleList},
-        {"password", false, &CLI::printPassword},
-        {"passphrase", false, &CLI::printPassphrase},
-        {"help", false, &CLI::printCommands},
-    };
+    clipCommand();
 
     // Control loop
     while (true)
@@ -248,12 +318,16 @@ void CLI::run()
     vault.lock();
 }
 
+// note: outdated
 void CLI::printCommands(const string &_)
 {
     print("Commands:\n");
-    print("  pmgr add <name>\n");
-    print("  pmgr get <name>\n");
-    print("  pmgr list\n");
-    print("  pmgr delete <name>\n");
-    print("  pmgr generate\n");
+    for (const auto &cmd : commands)
+    {
+        print("  pmgr ");
+        print(cmd.name);
+        if (cmd.requires_value)
+            print(" <value>");
+        print("\n");
+    }
 }
