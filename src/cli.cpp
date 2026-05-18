@@ -52,13 +52,31 @@ void readLine(Secret &s)
     }
 }
 
-inline string readString()
+string readString()
 {
     string result;
     char c;
     while (read(STDIN_FILENO, &c, 1) == 1 && c != '\n')
         result += c;
     return result;
+}
+
+bool isValidEntryName(const char *buf, size_t len)
+{
+    // Strict length validation
+    if (len == 0 || len > 64)
+        return false;
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        char c = buf[i];
+        // Whitelist: Allow only alpha-numeric, underscore, and dash
+        if (!isalnum(c) && c != '_' && c != '-')
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 Secret CLI::promptPassword(const char *prompt)
@@ -305,6 +323,8 @@ void CLI::run()
             {
                 if (cmd.requires_value && value.empty())
                     print("Command requires an argument.\n");
+                else if (cmd.requires_value && !isValidEntryName(value.c_str(), value.size()))
+                    print("Invalid entry name.\n");
                 else
                     (this->*cmd.handler)(value);
                 found = true;
