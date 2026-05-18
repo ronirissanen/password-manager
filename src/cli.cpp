@@ -303,7 +303,7 @@ void CLI::clearClipboard()
 void CLI::run()
 {
     init();
-    wordlist = loadWordlist("eff_large_wordlist.txt");
+    wordlist = loadWordlist("../data/eff_large_wordlist.txt");
     clipCommand();
 
     // Control loop
