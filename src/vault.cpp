@@ -23,14 +23,15 @@ void Vault::unlock()
     if (!file.is_open())
         return;
 
-    // Read salt from the front of the file
-    vector<unsigned char> salt(crypto_pwhash_SALTBYTES);
+    salt.resize(crypto_pwhash_SALTBYTES);
     file.read(reinterpret_cast<char *>(salt.data()), salt.size());
-    // If the data size is smaller than the salt size the file is empty or corrupt in some way.
+    // If the data size is smaller than salt size the file is empty or corrupt.
     if (file.gcount() < (std::streamsize)salt.size())
+    {
+        salt.clear();
         return;
+    }
 
-    // Read remaining ciphertext
     vector<unsigned char> ciphertext(
         (std::istreambuf_iterator<char>(file)),
         std::istreambuf_iterator<char>());
@@ -42,11 +43,13 @@ void Vault::unlock()
     plaintext.wipe();
 }
 
-// Known bug that can affect future code paths;
-// if save is called without re-deriving the key in memory won't match the salt on disk.
 void Vault::save()
 {
-    auto salt = generateSalt();
+    // Reuse the salt loaded from disk; only generate a fresh one
+    // if there isn't one yet (i.e. this is a brand-new vault).
+    if (salt.empty())
+        salt = generateSalt();
+
     Secret derived = deriveKey(masterPassword, salt);
     Secret plaintext = serialize();
     vector<unsigned char> ciphertext = encrypt(plaintext, derived);
@@ -57,7 +60,6 @@ void Vault::save()
     if (!file.is_open())
         throw std::runtime_error("Cannot open vault file for writing.");
 
-    // write [salt][ciphertext]
     file.write(reinterpret_cast<const char *>(salt.data()), salt.size());
     file.write(reinterpret_cast<const char *>(ciphertext.data()), ciphertext.size());
 }

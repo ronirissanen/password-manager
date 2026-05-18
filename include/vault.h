@@ -30,6 +30,7 @@ public:
     Vault() = default;
 
 private:
+    std::vector<unsigned char> salt;
     std::string path;
     Secret masterPassword;
     std::map<std::string, Entry> entries;

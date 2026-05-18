@@ -5,7 +5,6 @@
 #include <sys/prctl.h>
 #include <unistd.h>
 #include <string.h>
-using std::cout;
 
 void setCoreDumpLimits()
 {

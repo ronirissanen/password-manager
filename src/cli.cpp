@@ -21,12 +21,12 @@ const CLI::Command CLI::commands[] = {
     {"copy", true, &CLI::handleCopy},
     {"delete", true, &CLI::handleDelete},
     {"list", false, &CLI::handleList},
-    {"password", false, &CLI::printPassword},
-    {"passphrase", false, &CLI::printPassphrase},
+    //{"password", false, &CLI::printPassword},         --segfault bug with these atm
+    //{"passphrase", false, &CLI::printPassphrase},
     {"help", false, &CLI::printCommands},
 };
 
-// Write helpers to avoid leaking secrets to memory with std::cout
+// Write helpers to avoid leaking secrets to memory with std::cout or other buffers
 void print(const char *s)
 {
     write(STDOUT_FILENO, s, strlen(s));
@@ -318,7 +318,6 @@ void CLI::run()
     vault.lock();
 }
 
-// note: outdated
 void CLI::printCommands(const string &_)
 {
     print("Commands:\n");
@@ -327,7 +326,7 @@ void CLI::printCommands(const string &_)
         print("  pmgr ");
         print(cmd.name);
         if (cmd.requires_value)
-            print(" <value>");
+            print(" <entry name>");
         print("\n");
     }
 }
