@@ -33,6 +33,9 @@ private:
     std::vector<unsigned char> salt;
     std::string path;
     Secret masterPassword;
+    
+    // Technically the name of each entry should be a secret
+    // Another UX compromise to have all entries easily printable and searchable
     std::map<std::string, Entry> entries;
 
     Secret serialize();
